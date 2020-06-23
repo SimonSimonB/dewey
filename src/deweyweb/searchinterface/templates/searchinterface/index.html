@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>My test page</title>
+  </head>
+  <body>
+    <p>This is my page</p>
+    <form method="POST" action="">
+        {% csrf_token %}
+        text: <input type="text" name="query" value=""><br>
+        <input type="submit" value="Submit">
+    </form>
+    <ul>
+    {% for result in result_list %}
+        <li>{{ result.title }}</li>
+    {% endfor %}
+    </ul>
+  </body>
+</html>
