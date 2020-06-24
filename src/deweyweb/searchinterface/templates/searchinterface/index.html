@@ -1,170 +1,176 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <style>
-      .results {
-  width: 90%;
-  max-width: 1240px;
-  margin: 0 auto;
-   
-  display: grid;
-   
-  grid-template-columns: 1fr;
-  grid-template-rows: auto;
-  grid-gap: 50px;
-}
 
-@media only screen and (min-width: 500px) {
-  .results {
-    grid-template-columns: 1fr;
-  }  
-}
+<head>
+  <meta charset="utf-8">
+  <style>
+    .results {
+      width: 90%;
+      max-width: 1240px;
+      margin: 0 auto;
 
-.card {
-  background: white;
-  text-decoration: none;
-  color: #444;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  min-height: 100%; /* cards fill up the height of the parent, the grid item */
-  
-  /* To allow moving the card when hovering */
-  position: relative;
-  top: 0;
-  transition: all .1s ease-in;
-}
+      display: grid;
 
-/* Move the card when hovering */
-.card:hover {
-  top: -2px;
-  box-shadow: 0 4px 5px rgba(0,0,0,0.2);
-}
+      grid-template-columns: 1fr;
+      grid-template-rows: auto;
+      grid-gap: 50px;
+    }
 
-/* Space text in card */
-.card card-content {
-  padding: 20px;
-}
- 
-/* Specify typography in card */
-.papertitle {
-  font-size: 24px;
-  margin: 0;
-  color: #333;
-}
+    .card {
+      background: white;
+      text-decoration: none;
+      color: #444;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: row;
+      grid-template-columns: 50% 50%;
+      min-height: 100%;
+      /* cards fill up the height of the parent, the grid item */
 
-.paperauthor {
-  flex: 1;
-  font-size: 18px;
-  font-weight: bold;
-  color: #666;
-  margin: 0.5em 0 0 0;
-}
+      /* To allow moving the card when hovering */
+      position: relative;
+      top: 0;
+      transition: all .1s ease-in;
+    }
 
-.paperjournalyear {
-   font-size: 18px;
-  font-weight: bold;
-  color: #666;
-  margin: 2em 0 0 0; 
-}
+    /* Move the card when hovering */
+    .card:hover {
+      top: -2px;
+      box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Specify typography in card */
+    .papertitle {
+      font-size: 24px;
+      margin: 0;
+      color: #333;
+    }
+
+    .paperauthor {
+      flex: 1;
+      font-size: 18px;
+      font-weight: bold;
+      color: #666;
+      margin: 0.5em 0 0 0;
+    }
+
+    .paperjournalyear {
+      font-size: 18px;
+      font-weight: bold;
+      color: #666;
+      margin: 2em 0 0 0;
+    }
 
 
-/* Make the card contents element fill up all space of the card, so that the author is aligned at the bottom */
-.card card-content {
-  padding: 20px;
-  flex: 1;
-   
-  display: flex;
-  flex-direction: column;
-}
+    .card card-content-left {
+      padding: 20px;
+      /* Make the card contents element fill up all space of the card, so that the author is aligned at the bottom */
+      flex: 1;
 
-/* Inspired by https://webdesign.tutsplus.com/tutorials/solving-problems-with-css-grid-and-flexbox-the-card-ui--cms-27468 */
+      display: flex;
+      flex-direction: column;
+    }
 
-.wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 50px;
-  margin: 100px;
-}
+    .card card-content-right {
+      text-align: justify;
+      font-size: 24px;
+      color: #555;
+      padding: 20px;
+      flex: 0 0 50%
+    }
 
-.searchform {
-  display: flex;
-  justify-content: center;
-  flex-direction: row;
-  align-self: stretch;
-  background: black;
-}
+    /* Inspired by https://webdesign.tutsplus.com/tutorials/solving-problems-with-css-grid-and-flexbox-the-card-ui--cms-27468 */
 
-.searchbox {
-  resize: none;
-  outline: none;
-  border: none;
-  align-self: stretch;
-  text-align: justify;
-  /* background-color: rgb(253, 253, 253); */
-  margin-left: 33%;
-  margin-right: 33%;
-  margin-bottom: 80px;
-  font-family: "Times New Roman", Times, serif; 
-  font-size: 24px;
-}
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 50px;
+      margin: 100px;
+    }
 
-.searchbutton {
-  height: 0px;
-  width: 0px;
-  border: none;
-  color: black;
-  padding: 0px;
-  margin: 0px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-}
+    .searchform {
+      display: flex;
+      justify-content: center;
+      flex-direction: row;
+      align-self: stretch;
+      background: black;
+    }
 
-    </style>
-     
-  </head>
-  <body>
-    <div class="wrapper">
+    .searchbox {
+      resize: none;
+      outline: none;
+      border: none;
+      align-self: stretch;
+      text-align: justify;
+      /* background-color: rgb(253, 253, 253); */
+      margin-left: 33%;
+      margin-right: 33%;
+      margin-bottom: 80px;
+      font-family: "Times New Roman", Times, serif;
+      font-size: 24px;
+    }
 
-      <form class="searchform" method="POST" id="searchnow">
-        {% csrf_token %}
-        <button class="searchbutton" id="searchbutton1" hidefocus="true"></button>
-      </form>
-      <textarea class="searchbox" name="query" id="searchbox1" placeholder="Type keywords, or paste your abstract or paper here&#10;press enter to search" rows="5" form="searchnow"></textarea>
-     
-      <div class="results">
+    .searchbutton {
+      height: 0px;
+      width: 0px;
+      border: none;
+      color: black;
+      padding: 0px;
+      margin: 0px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+    }
+  </style>
 
-        <!-- grid item, containing a card -->
-        {% for paper in result_list %}
-            <div>
-                  <a href="https://doi.org/{{ paper.doi }}" class="card">
-                    <card-content>
-                      <h1 class="papertitle">{{ paper.title }}</h1>
-                      <span class="paperauthor">{{ paper.author }}</span>
-                      <span class="paperjournalyear"><i>{{ paper.journal }}</i>, {{ paper.year }}</span>
-                    </card-content>
-                  </a>
-            </div>
-        {% endfor %}
+</head>
+
+<body>
+  <div class="wrapper">
+
+    <form class="searchform" method="POST" id="searchnow">
+      {% csrf_token %}
+      <button class="searchbutton" id="searchbutton1" hidefocus="true"></button>
+    </form>
+    <textarea class="searchbox" name="query" id="searchbox1"
+      placeholder="Type keywords, or paste your abstract or paper here&#10;press enter to search" rows="5"
+      form="searchnow"></textarea>
+
+    <div class="results">
+
+      <!-- grid item, containing a card -->
+      {% for paper in result_list %}
+      <div>
+        <a href="https://doi.org/{{ paper.doi }}" class="card">
+          <card-content-left>
+            <h1 class="papertitle">{{ paper.title }}</h1>
+            <span class="paperauthor">{{ paper.author }}</span>
+            <span class="paperjournalyear"><i>{{ paper.journal }}</i>, {{ paper.year }}</span>
+          </card-content-left>
+          <card-content-right>
+            {{ paper.abstract }}
+          </card-content-right>
+        </a>
       </div>
+      {% endfor %}
     </div>
-<script>
-      // Get the input field
-      var input = document.getElementById("searchbox1");
+  </div>
+  <script>
+    // Get the input field
+    var input = document.getElementById("searchbox1");
 
-      // Execute a function when the user releases a key on the keyboard
-      input.addEventListener("keydown", function(event) {
-        // Number 13 is the "Enter" key on the keyboard
-        if ((event.keyCode == 10 || event.keyCode == 13)) {
-          // Cancel the default action, if needed
-          event.preventDefault();
-          // Trigger the button element with a click
-          document.getElementById("searchbutton1").click();
-        }
-      });
+    // Execute a function when the user releases a key on the keyboard
+    input.addEventListener("keydown", function (event) {
+      // Number 13 is the "Enter" key on the keyboard
+      if ((event.keyCode == 10 || event.keyCode == 13)) {
+        // Cancel the default action, if needed
+        event.preventDefault();
+        // Trigger the button element with a click
+        document.getElementById("searchbutton1").click();
+      }
+    });
   </script>
-  </body>
+</body>
+
 </html>
