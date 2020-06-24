@@ -12,13 +12,14 @@ similar_papers_service = deweyengine.similar_papers_service.SimilarPapersService
 
 # Create your views here.
 def index(request):
-    result_list = [{'title': 'Risk attitudes and social choice'}]
 
     if request.method == 'POST':
         query = request.POST.get('query', None)
 
         # Get papers by similarity 
         result_list = [x[0] for x in similar_papers_service.get_papers_by_similarity(query)]
+    else:
+        result_list = [x[0] for x in similar_papers_service.get_papers_by_similarity('debug')]
     
     template = django.template.loader.get_template('searchinterface/index.html')
     context = {
