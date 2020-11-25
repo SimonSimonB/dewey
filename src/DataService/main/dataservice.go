@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"reflect"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -30,29 +31,32 @@ var paperAttributes = []attribute{
 }
 
 func queryResultToJSON(rows *sql.Rows, w io.Writer) {
-	columns, _ := rows.Columns()
-	columnCount := len(columns)
+	columnNames, _ := rows.Columns()
+	columnCount := len(columnNames)
 	columnValues := make([]interface{}, columnCount)
 	columnValuePointers := make([]interface{}, columnCount)
 	for i := range columnValues {
 		columnValuePointers[i] = &columnValues[i]
 	}
 
-	data := make(map[string][]interface{})
+	var data []map[string]interface{}
 
 	for rows.Next() {
 		rows.Scan(columnValuePointers...)
+		row := make(map[string]interface{})
 		for i, v := range columnValues {
 			t := reflect.TypeOf(v).Kind()
 			switch t {
 			case reflect.String:
-				data[columns[i]] = append(data[columns[i]], fmt.Sprintf("%v", v))
+				row[columnNames[i]] = fmt.Sprintf("%v", v)
 			case reflect.Int64:
-				data[columns[i]] = append(data[columns[i]], v.(int64))
+				row[columnNames[i]] = v.(int64)
 			default:
 				fmt.Printf("Can't deal with type %T", v)
 			}
 		}
+
+		data = append(data, row)
 	}
 
 	err := json.NewEncoder(w).Encode(data)
@@ -85,4 +89,9 @@ func InitServer() error {
 	go http.ListenAndServe(":8080", router)
 
 	return nil
+}
+
+func main() {
+	InitServer()
+	time.Sleep(1000000000000)
 }
