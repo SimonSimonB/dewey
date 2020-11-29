@@ -17,15 +17,15 @@ def initialize(dataServiceUrl):
         corpus=store.get_all()[:3])
 
 
-@app.route('/search', methods=['POST'])
+@app.route('/similarities', methods=['POST'])
 def get_papers_by_similarity():
-    received_json = flask.request.json
-    query = json.loads(received_json)['query']
-    print('Computing similarities...')
-    papers_with_similarity = similarity_measure.get_similarities(query)
+    query = flask.request.json['query']
+    print('Received request. Computing similarities...')
+    dois_with_similarity = similarity_measure.get_similarities(query)
     print('Done.')
 
-    return flask.jsonify(papers_with_similarity)
+    return flask.Response(json.dumps(dois_with_similarity),
+                          mimetype='application/json')
 
 
 '''
@@ -46,7 +46,7 @@ if __name__ == '__main__':
         config = json.loads(f.read())
         data_service_port = config['data_service']['port']
         similarity_service_port = config['similarity_service']['port']
-    initialize(dataServiceUrl='http://127.0.0.1:/' + str(data_service_port))
+    initialize(dataServiceUrl=f'http://127.0.0.1:{str(data_service_port)}/')
     app.run(port=similarity_service_port)
 
     # Now, could talk to this service as follows:

@@ -1,3 +1,4 @@
+import collections
 import pathlib
 import tqdm
 import scipy.sparse.linalg
@@ -40,7 +41,7 @@ class TfIdfSimilarityCorpus():
             zip(map(lambda paper: paper['doi'], self._corpus), tfidf_vectors))
 
     def get_similarities(self, query: str):
-        """Returns a list of pairs containing a paper and a similarity, sorted by descending similarity.
+        """Returns a list of pairs containing a DOI and a similarity, sorted by descending similarity.
         Args:
             query: The text for which to compute the similarities.
         """
@@ -60,10 +61,14 @@ class TfIdfSimilarityCorpus():
                     self._corpus_tfidf[doi].transpose())[0, 0]
                 similarities[doi] = vector_product / norm_product
 
-        papers_with_similarity = [
-            (paper, similarities[paper['doi']]) for paper in self._corpus
-        ]
-        sorted_by_similarity = sorted(papers_with_similarity,
-                                      key=lambda x: -x[1])
+        papers_with_similarity = {
+            paper['doi']: similarities[paper['doi']] for paper in self._corpus
+        }
+        #sorted_by_similarity = sorted(papers_with_similarity,
+        #                              key=lambda x: -x[1])
+        sorted_by_similarity = collections.OrderedDict(
+            sorted(papers_with_similarity.items(),
+                   key=lambda x: x[1],
+                   reverse=True))
 
         return sorted_by_similarity
