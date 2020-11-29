@@ -6,10 +6,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"reflect"
-	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -86,12 +87,27 @@ func InitServer() error {
 			responseWriter.WriteHeader(http.StatusBadRequest)
 		}
 	})
-	go http.ListenAndServe(":8080", router)
+
+	configFile, err := os.Open("../../config.json")
+	if err != nil {
+		fmt.Println(err)
+	}
+	configFileContents, _ := ioutil.ReadAll(configFile)
+
+	var config map[string]interface{}
+	json.Unmarshal([]byte(configFileContents), &config)
+
+	dataServicePort := config["data_service"].(map[string]interface{})["port"].(float64)
+	log.Println("Starting server on port ", dataServicePort)
+	configFile.Close()
+
+	go http.ListenAndServe(fmt.Sprintf(":%g", dataServicePort), router)
 
 	return nil
 }
 
 func main() {
 	InitServer()
-	time.Sleep(1000000000000)
+	fmt.Println("Press any key to terminate the database service...")
+	fmt.Scanln()
 }

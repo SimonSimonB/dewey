@@ -1,0 +1,11 @@
+{
+    "search_service": {
+        "port": 8080
+    },
+    "similarity_service": {
+        "port": 8081
+    },
+    "data_service": {
+        "port": 8082
+    }
+}
