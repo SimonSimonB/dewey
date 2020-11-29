@@ -1,4 +1,4 @@
-module github.com/simonsimonb/dewey
+module github.com/simonsimonb/dewey/src/DataService
 
 go 1.15
 
