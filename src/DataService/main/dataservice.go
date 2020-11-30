@@ -61,7 +61,14 @@ func queryResultToJSON(rows *sql.Rows, w io.Writer) {
 		data = append(data, row)
 	}
 
-	err := json.NewEncoder(w).Encode(data)
+	// If it was a single row, encode a map[string]interface{} rather than a []map[string]interface{}.
+	var err error
+	if len(data) == 1 {
+		err = json.NewEncoder(w).Encode(data[0])
+	} else {
+		err = json.NewEncoder(w).Encode(data)
+	}
+
 	if err != nil {
 		log.Fatal("Failed to encode papers SQL table as JSON")
 	}

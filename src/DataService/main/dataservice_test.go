@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -20,7 +21,10 @@ func TestRetrievePaper(t *testing.T) {
 			t.Fail()
 		}
 
-		if !strings.Contains(string(body), "Grit") {
+		var paperData map[string]interface{}
+		json.Unmarshal(body, &paperData)
+
+		if paperData["title"] != "Grit*" {
 			t.Fail()
 		}
 	}
