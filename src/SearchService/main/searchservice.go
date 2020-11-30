@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sort"
 )
 
 // InitServer initializes the HTTP server for the search API.
@@ -53,9 +54,25 @@ func InitServer() error {
 		var similarities map[string]interface{}
 		json.Unmarshal([]byte(similarityServiceResponseContent), &similarities)
 
+		// Sort papers by similarity.
+		type doiSimilarity struct {
+			doi        string
+			similarity float64
+		}
+
+		var doiSimilarities []doiSimilarity
+		for doi, similarity := range similarities {
+			doiSimilarities = append(doiSimilarities, doiSimilarity{doi, similarity.(float64)})
+		}
+		sort.Slice(doiSimilarities, func(i, j int) bool {
+			return doiSimilarities[i].similarity > doiSimilarities[j].similarity
+		})
+		log.Print("Returning results, sorted by similarity: ", doiSimilarities)
+
 		const numPapersToReturn = 10
 		var searchResultsData []map[string]interface{}
-		for doi := range similarities {
+		for _, paperDoiSimilarity := range doiSimilarities {
+			doi := paperDoiSimilarity.doi
 			if len(searchResultsData) >= numPapersToReturn {
 				break
 			}
