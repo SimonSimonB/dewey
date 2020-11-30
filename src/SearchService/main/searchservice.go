@@ -73,6 +73,7 @@ func InitServer() error {
 				"title":        paperData["title"],
 				"author":       paperData["author"],
 				"year":         paperData["year"],
+				"journal":      paperData["journal"],
 				"abstract":     paperData["abstract"],
 				"auto_summary": paperData["auto_summary"],
 				"doi":          paperData["doi"],
