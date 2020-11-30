@@ -1,0 +1,108 @@
+#wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 50px;
+    margin: 100px;
+}
+
+#searchform {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-self: stretch;
+    background: black;
+}
+
+#searchbox {
+    resize: none;
+    outline: none;
+    border: 1px solid #bbb;
+    align-self: stretch;
+    text-align: justify;
+    margin-left: 33%;
+    margin-right: 33%;
+    margin-bottom: 80px;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 24px;
+}
+
+#searchbutton {
+    height: 0px;
+    width: 0px;
+    border: none;
+    color: black;
+    padding: 0px;
+    margin: 0px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+#results {
+    width: 90%;
+    max-width: 1240px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    grid-gap: 50px;
+}
+
+.card {
+    background: white;
+    text-decoration: none;
+    color: #444;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: row;
+    grid-template-columns: 50% 50%;
+    /* Cards fill up the height of the parent, the grid item */
+    min-height: 100%;
+    /* To allow moving the card when hovering */
+    position: relative;
+    top: 0;
+    transition: all .1s ease-in;
+}
+
+.card:hover {
+    top: -2px;
+    box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
+}
+
+.card card-content-left {
+    padding: 20px;
+    /* Make the card contents element fill up all space of the card, so that the author is aligned at the bottom */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.card card-content-right {
+    text-align: justify;
+    font-size: 24px;
+    color: #555;
+    padding: 20px;
+    flex: 0 0 50%
+}
+
+.papertitle {
+    font-size: 24px;
+    margin: 0;
+    color: #333;
+}
+
+.paperauthor {
+    flex: 1;
+    font-size: 18px;
+    font-weight: bold;
+    color: #666;
+    margin: 0.5em 0 0 0;
+}
+
+.paperjournalyear {
+    font-size: 18px;
+    font-weight: bold;
+    color: #666;
+    margin: 2em 0 0 0;
+}
