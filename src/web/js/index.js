@@ -1,58 +1,92 @@
-const SEARCH_URI = "http://127.0.0.1:8080/similarpapers";
-const inputElement = document.getElementById("searchbox")
+function ResultCard(paper) {
+    return (
+        <div key={paper.doi}>
+            <a href={'https://doi.org/' + paper.doi} className='card'>
+                <card-content-left>
+                    <h1 className='papertitle'>{paper.title}</h1>
+                    <span className='paperauthor'>{paper.author}</span>
+                    <span className='paperjournalyear'><i>{paper.journal}</i>, {paper.year}</span>
+                </card-content-left>
+                <card-content-right>
+                    {paper.abstract}
+                </card-content-right>
+            </a>
+        </div>
+    );
+}
 
-// If the enter key is pressed, then the query is sent off to the search service.
-inputElement.addEventListener("keydown", function (event) {
-    if (event.key == "Enter") {
-        event.preventDefault();
+class Results extends React.Component {
+    render() {
+        let resultCards = [];
 
-        let xhr = new XMLHttpRequest();
-        xhr.open("POST", SEARCH_URI, true);
-        xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
-        const query = { "query": inputElement.value }
-        xhr.send(JSON.stringify(query));
+        for (const paper of this.props.papers || []) {
+            resultCards.push(
+                ResultCard(paper)
+            );
+        }
 
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                const response = JSON.parse(xhr.responseText);
-                let resultsDiv = document.getElementById('results');
-                resultsDiv.innerHTML = '';
-                for (const paper of response) {
-                    // Create an HTML element that shows information about this paper.
-                    let paperDiv = document.createElement('div');
-                    let paperCard = document.createElement('a');
+        return (
+            <div id='results'>
+                {resultCards}
+            </div>
+        );
+    }
+}
 
-                    let cardContentLeft = document.createElement('card-content-left');
-                    let paperTitle = document.createElement('h1');
-                    paperTitle.classList.add('papertitle');
-                    paperTitle.innerText = paper['title'];
-                    let paperAuthor = document.createElement('span')
-                    paperAuthor.classList.add('paperauthor')
-                    paperAuthor.innerText = paper['author']
-                    let paperJournalYear = document.createElement('span')
-                    paperJournalYear.classList.add('paperjournalyear')
-                    paperJournalYear.innerHTML = '<i>' + paper['journal'] + '</i>, ' + paper['year'];
+class InputBox extends React.Component {
+    render() {
+        return (
+            <textarea name='query' id='searchbox'
+                placeholder='Type or paste keywords, abstracts, or entire papers.&#10;&#10;Press enter to search.' rows='5'
+                form='searchnow'
+                onKeyDown={(e) => this.props.onKeyDown(e)}>
+            </textarea>
+        );
+    }
+}
 
-                    cardContentLeft.appendChild(paperTitle);
-                    cardContentLeft.appendChild(paperAuthor);
-                    cardContentLeft.appendChild(paperJournalYear);
+class App extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            papers: null,
+        }
+    }
 
-                    paperCard.setAttribute('href', 'https://doi.org/' + paper['doi']);
-                    paperCard.classList.add('card');
-                    paperCard.appendChild(cardContentLeft);
+    query(event) {
+        const SEARCH_URI = 'http://127.0.0.1:8080/similarpapers';
 
-                    let cardContentRight = document.createElement('card-content-right');
-                    if (paper['abstract'] != '') {
-                        cardContentRight.innerHTML = 'Abstract:<br>' + paper['abstract'];
-                    } else if (paper['auto_summary'] != '') {
-                        cardContentRight.innerHTML = 'Quotes from the paper:<br>' + paper['auto_summary'];
-                    }
-                    paperCard.appendChild(cardContentRight);
+        if (event.key == 'Enter') {
+            event.preventDefault();
 
-                    paperDiv.appendChild(paperCard);
-                    resultsDiv.appendChild(paperDiv);
+            let xhr = new XMLHttpRequest();
+            xhr.open('POST', SEARCH_URI, true);
+            xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+            const query = { 'query': event.target.value }
+            xhr.send(JSON.stringify(query));
+
+            // Display the JSON response from the server.
+            let appElement = this;
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    appElement.setState({ papers: response });
                 }
-            }
-        };
-    };
-});
+            };
+        }
+    }
+
+    render() {
+        return (
+            <div id='wrapper'>
+                <InputBox onKeyDown={(e) => this.query(e)} />
+                <Results papers={this.state.papers} />
+            </div>
+        );
+    }
+}
+
+ReactDOM.render(
+    <App />,
+    document.getElementById('root')
+);
