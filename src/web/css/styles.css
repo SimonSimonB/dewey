@@ -49,6 +49,19 @@
     grid-gap: 50px;
 }
 
+#buttoncontainer {
+    display: flex;
+    flex-direction: row;
+}
+
+.resultsnavigationbutton {
+    font-family: "Times New Roman", Times, serif;
+    font-size: x-large;
+    border: none;
+    background: white;
+    margin: 50px;
+}
+
 .card {
     background: white;
     text-decoration: none;

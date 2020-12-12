@@ -17,11 +17,13 @@ function ResultCard(paper) {
 
 class Results extends React.Component {
     render() {
+        let startIndex = Math.max(0, this.props.currentPage - 1) * this.props.resultsPerPage;
+        let endIndex = Math.min(this.props.papers.length - 1, startIndex + this.props.resultsPerPage - 1);
         let resultCards = [];
 
-        for (const paper of this.props.papers || []) {
+        for (let i = startIndex; i <= endIndex; i++) {
             resultCards.push(
-                ResultCard(paper)
+                ResultCard(this.props.papers[i])
             );
         }
 
@@ -45,12 +47,51 @@ class InputBox extends React.Component {
     }
 }
 
+class ResultsNavigation extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+
+        let navigationButtons = [];
+
+        let i = this.props.minPage;
+        for (; i <= this.props.maxPage; i++) {
+            navigationButtons.push(
+                <button key={i} onClick={this.props.handleClick} className='resultsnavigationbutton'>{i}</button>
+            );
+        }
+
+        return (
+            <div id='buttoncontainer'>
+                {navigationButtons}
+            </div>
+        );
+    }
+}
+
 class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            papers: null,
-        }
+            papers: [],
+            resultsPerPage: 10,
+            currentPage: null,
+            minPage: null,
+            maxPage: null,
+        };
+
+        this.handlePageNavClick = this.handlePageNavClick.bind(this);
+    }
+
+    handlePageNavClick(event) {
+        const destinationPage = parseInt(event.target.textContent);
+        this.setState({ currentPage: destinationPage });
+
+        // Scroll up when the user navigates to a different page of the results.
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
     }
 
     query(event) {
@@ -70,7 +111,12 @@ class App extends React.Component {
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     const response = JSON.parse(xhr.responseText);
-                    appElement.setState({ papers: response });
+                    appElement.setState({
+                        papers: response,
+                        currentPage: 1,
+                        minPage: 1,
+                        maxPage: Math.floor((response.length - 1) / appElement.state.resultsPerPage) + 1
+                    });
                 }
             };
         }
@@ -80,7 +126,13 @@ class App extends React.Component {
         return (
             <div id='wrapper'>
                 <InputBox onKeyDown={(e) => this.query(e)} />
-                <Results papers={this.state.papers} />
+                <Results papers={this.state.papers} resultsPerPage={this.state.resultsPerPage} currentPage={this.state.currentPage} />
+                <ResultsNavigation
+                    handleClick={this.handlePageNavClick}
+                    currentPage={this.state.currentPage}
+                    minPage={this.state.minPage}
+                    maxPage={this.state.maxPage}
+                />
             </div>
         );
     }
