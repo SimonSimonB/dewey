@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  dataservice:
+    build:
+      context: .
+      dockerfile: src/DataService/Dockerfile
+    network_mode: "host"
+  similarityservice:
+    build:
+      context: .
+      dockerfile: src/SimilarityService/Dockerfile
+    network_mode: "host"
+  searchservice:
+    build:
+      context: .
+      dockerfile: src/SearchService/Dockerfile
+    network_mode: "host"
+  web:
+    build:
+      context: .
+      dockerfile: src/web/Dockerfile
+    network_mode: "host"
