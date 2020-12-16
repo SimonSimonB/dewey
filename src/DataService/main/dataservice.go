@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"reflect"
 
 	"github.com/gorilla/mux"
@@ -76,7 +77,14 @@ func queryResultToJSON(rows *sql.Rows, w io.Writer) {
 
 // InitServer initializes the HTTP server for the data API.
 func InitServer() error {
-	db, err := sql.Open("sqlite3", "../papers.db")
+	executablePath, err := os.Executable()
+	if err != nil {
+		return errors.New("could not retrieve path of executable, relative to which the database path is specified")
+	}
+	dbPath := filepath.Join(filepath.Dir(executablePath), "papers.db")
+	fmt.Println(dbPath)
+
+	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		return errors.New("could not open SQLite database file")
 	}
@@ -91,6 +99,7 @@ func InitServer() error {
 			}
 
 			queryResultToJSON(rows, responseWriter)
+			log.Print("Returning all papers in response to request.")
 			responseWriter.Header().Set("Content-Type", "application/json")
 		} else {
 			responseWriter.WriteHeader(http.StatusBadRequest)
@@ -134,6 +143,5 @@ func InitServer() error {
 
 func main() {
 	InitServer()
-	fmt.Println("Press any key to terminate the database service...")
-	fmt.Scanln()
+	select {}
 }

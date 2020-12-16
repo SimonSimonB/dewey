@@ -69,11 +69,11 @@ func InitServer() error {
 		})
 		log.Print("Returning results, sorted by similarity: ", doiSimilarities)
 
-		const numPapersToReturn = 10
+		const maxNumPapersToReturn = 100
 		var searchResultsData []map[string]interface{}
 		for _, paperDoiSimilarity := range doiSimilarities {
 			doi := paperDoiSimilarity.doi
-			if len(searchResultsData) >= numPapersToReturn {
+			if len(searchResultsData) >= maxNumPapersToReturn {
 				break
 			}
 
@@ -117,6 +117,5 @@ func InitServer() error {
 
 func main() {
 	InitServer()
-	fmt.Println("Press any key to terminate the search service...")
-	fmt.Scanln()
+	select {}
 }
